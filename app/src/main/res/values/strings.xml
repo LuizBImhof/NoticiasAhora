@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">NoticiasAhora</string>
+    <string name="crash_toast_message">Fail</string>
+</resources>
