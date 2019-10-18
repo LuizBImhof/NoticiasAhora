@@ -1,9 +1,9 @@
-package cl.ucn.dis.dsm.news.NewsAPI;
+package cl.ucn.dis.dsm.news.newsapi;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Result {
+public class NewsResult {
 
     public String status;
     public long totalResults;

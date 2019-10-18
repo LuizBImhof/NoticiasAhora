@@ -1,4 +1,4 @@
-package cl.ucn.dis.dsm.news.NewsAPI;
+package cl.ucn.dis.dsm.news.newsapi;
 
 
 public class Article {
