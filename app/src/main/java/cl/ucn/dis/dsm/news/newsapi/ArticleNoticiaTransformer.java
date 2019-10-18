@@ -115,20 +115,17 @@ public final class ArticleNoticiaTransformer implements Transformer.NoticiaTrans
         log.debug("Autor de la noticia {}", autor);
 
 
-        try {
-            return new Noticia(
-                    titulo,
-                    nombreFuente,
-                    url,
-                    imagenUrl,
-                    descripcion,
-                    contenido,
-                    publishedAt,
-                    autor
-            );
-        } catch (NullPointerException ex) {
-            throw new Transformer.NoticiaTransformerException("Fecha o descripción null", ex);
-        }
+
+        return new Noticia(
+                titulo,
+                nombreFuente,
+                url,
+                imagenUrl,
+                descripcion,
+                contenido,
+                publishedAt,
+                autor
+        );
 
 
     }
