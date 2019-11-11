@@ -1,4 +1,4 @@
-package cl.ucn.dis.dsm.news.newsapi;
+package cl.ucn.disc.dsm.news.newsapi;
 
 import java.util.ArrayList;
 import java.util.List;

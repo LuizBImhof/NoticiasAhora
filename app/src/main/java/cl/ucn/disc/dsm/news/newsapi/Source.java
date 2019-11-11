@@ -1,4 +1,4 @@
-package cl.ucn.dis.dsm.news.newsapi;
+package cl.ucn.disc.dsm.news.newsapi;
 
 
 public class Source {

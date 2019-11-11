@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cl.ucn.dis.dsm.news;
+package cl.ucn.disc.dsm.news;
 
 import android.app.Application;
 import android.content.Context;

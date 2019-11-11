@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package cl.ucn.dis.dsm.news;
+package cl.ucn.disc.dsm.news;
+
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import cl.ucn.dis.dsm.news.model.Noticia;
+import cl.ucn.disc.dsm.news.model.Noticia;
 
 /**
  * Transformador de T a Noticia.
@@ -53,6 +56,18 @@ public final class Transformer<T> {
     }
 
     /**
+     * Transforma en String un objeto t mostrando sus atributos.
+     *
+     * @param t   to convert.
+     * @param <T> type of t.
+     * @return the object in string format.
+     */
+    public static <T> String toString(final T t) {
+        return ReflectionToStringBuilder.toString(t, ToStringStyle.MULTI_LINE_STYLE);
+    }
+
+
+    /**
      * Transforma una {@link Collection} de T en una {@link List} de noticia
      * se usa collection pois puede ser cualquier lista
      * @param collection fuente de T
@@ -69,9 +84,11 @@ public final class Transformer<T> {
         for (final T t:collection) {
 
             try {
-                final Noticia noticia = this.noticiaTransformer.transform(t);
-                noticias.add(noticia);
+
+                // Transformo y agrego a la lista de noticias el t.
+                noticias.add(this.noticiaTransformer.transform(t));
             } catch (NoticiaTransformerException  e) {
+                // .. si se produce una exception, despliego un warning y se omite.
                 log.warn("Article skipped: {}", e.getMessage(), e);
             }
         }

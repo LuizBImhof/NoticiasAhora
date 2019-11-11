@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cl.ucn.dis.dsm.news.newsapi;
+package cl.ucn.disc.dsm.news.newsapi;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.List;
 
-import cl.ucn.dis.dsm.news.Transformer;
-import cl.ucn.dis.dsm.news.model.Noticia;
+import cl.ucn.disc.dsm.news.Transformer;
+import cl.ucn.disc.dsm.news.model.Noticia;
 
 
 /**
@@ -48,7 +48,7 @@ public final class TestNewsAPI {
     }
 
     /**
-     * Test of {@link cl.ucn.dis.dsm.news.newsapi.ArticleNoticiaTransformer#transform(Article)}
+     * Test of {@link cl.ucn.disc.dsm.news.newsapi.ArticleNoticiaTransformer#transform(Article)}
      */
     @Test
     public void testTransform(){

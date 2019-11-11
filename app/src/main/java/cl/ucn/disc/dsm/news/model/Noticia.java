@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cl.ucn.dis.dsm.news.model;
+package cl.ucn.disc.dsm.news.model;
 
 import org.threeten.bp.ZonedDateTime;
 

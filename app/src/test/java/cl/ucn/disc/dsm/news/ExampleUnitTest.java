@@ -1,4 +1,4 @@
-package cl.ucn.dis.dsm.news;
+package cl.ucn.disc.dsm.news;
 
 
 import org.junit.jupiter.api.Test;

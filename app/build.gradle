@@ -53,10 +53,14 @@ dependencies {
 
     //Retrofit2
     implementation 'com.squareup.retrofit2:retrofit:2.6.2'
+    implementation 'com.squareup.retrofit2:converter-gson:2.6.2'
 
     //Gson
     implementation 'com.google.code.gson:gson:2.8.6'
 
     //310 (java date) https://github.com/JakeWharton/ThreeTenABP Utilizado por que datetime no funciona en android antiguo
     implementation 'com.jakewharton.threetenabp:threetenabp:1.2.1'
+
+    // Commons Lang3: https://commons.apache.org/proper/commons-lang/
+    implementation 'org.apache.commons:commons-lang3:3.9'
 }
