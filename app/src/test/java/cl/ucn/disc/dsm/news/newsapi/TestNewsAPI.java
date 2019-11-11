@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,10 +43,6 @@ public final class TestNewsAPI {
      * The logger
      */
     public static final Logger log = LoggerFactory.getLogger(TestNewsAPI.class);
-
-    private static String toString(final Object object){
-        return ReflectionToStringBuilder.toString(object, ToStringStyle.MULTI_LINE_STYLE);
-    }
 
     /**
      * Test of {@link cl.ucn.disc.dsm.news.newsapi.ArticleNoticiaTransformer#transform(Article)}
@@ -89,7 +86,7 @@ public final class TestNewsAPI {
             article.content = "Bitcoins network to transactions ratio, or NVT for short, is an indicator developed by crypto analyst Willy Woo as a signal for deterring tops and bottoms of Bitcoin cycles.\\r\\nA tweaked version of the indicator, one that was designed to filter out private tran… [+2681 chars]";
         }
 
-        log.debug("Testing with Article: {}", toString(article));
+        log.debug("Testing with Article: {}", Transformer.toString(article));
 
         // Nullity
         log.debug("Testing pseudo-nullity ..");
@@ -218,6 +215,28 @@ public final class TestNewsAPI {
 
         // El tamanio debe ser solamente los 2 articulos validos
         Assertions.assertEquals(2, noticias.size(), "Listado de tamanio incorrecto");
+
+    }
+    /**
+     * Testing Retrofit.
+     *
+     * @throws IOException en caso de error.
+     */
+    @Test
+    public void testRetrofit() throws IOException {
+
+        // FIXME: Terminar de implementar esta prueba. (como hacer para testar erros de retorno de la API?)
+
+        log.debug("Obteniendo noticias ..");
+        final NewsApiService newsAPIService = new NewsApiService();
+        Assertions.assertNotNull(newsAPIService, "NewsApiService no puede ser null");
+
+        for (final Noticia noticia : newsAPIService.getNoticias()) {
+            log.debug("Noticia: {}", Transformer.toString(noticia));
+            Assertions.assertNotNull(noticia, "La noticia no puede ser null");
+        }
+
+
 
     }
 
