@@ -16,10 +16,14 @@
 
 package cl.ucn.disc.dsm.news.newsapi;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -222,21 +226,44 @@ public final class TestNewsAPI {
      *
      * @throws IOException en caso de error.
      */
-    @Test
+    @RepeatedTest(5)
+    @Timeout(30)
     public void testRetrofit() throws IOException {
 
         // FIXME: Terminar de implementar esta prueba. (como hacer para testar erros de retorno de la API?)
+
+        final int PAGESIZE = RandomUtils.nextInt(5,51);
+
+        final StopWatch stopWatch = StopWatch.createStarted();
+
 
         log.debug("Obteniendo noticias ..");
         final NewsApiService newsAPIService = new NewsApiService();
         Assertions.assertNotNull(newsAPIService, "NewsApiService no puede ser null");
 
-        for (final Noticia noticia : newsAPIService.getNoticias()) {
-            log.debug("Noticia: {}", Transformer.toString(noticia));
-            Assertions.assertNotNull(noticia, "La noticia no puede ser null");
+        final NewsApiService.Category[] categories = {
+                NewsApiService.Category.business,
+                NewsApiService.Category.technology,
+                NewsApiService.Category.entertainment,
+                NewsApiService.Category.sports,
+                NewsApiService.Category.health,
+                NewsApiService.Category.science,
+                NewsApiService.Category.general
+        };
+
+        for (int i = 0; i < categories.length; i++){
+
+            log.info("Getting the news of {} type.", categories[i]);
+
+            // The list of Noticia
+            final List<Noticia> noticias = newsAPIService.getNoticias(categories[i], PAGESIZE);
+
+            Assertions.assertNotNull(noticias);
+            Assertions.assertEquals(PAGESIZE, noticias.size(), "Size != "+ PAGESIZE);
+            // log.debug("Noticia: {}", Transformer.toString(noticias));
         }
 
-
+        log.info("Timex: {}", stopWatch);
 
     }
 
