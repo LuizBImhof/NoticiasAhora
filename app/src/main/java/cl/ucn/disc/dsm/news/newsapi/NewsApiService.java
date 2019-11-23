@@ -76,13 +76,13 @@ public final class NewsApiService {
     /**
      * @return la {@link List} de {@link Noticia}.
      */
-    public List<Noticia> getNoticias() {
+    public List<Noticia> getNoticias(Category category, int pageSize) {
 
         try {
 
             // Obtengo las noticias de technology por defecto
             final Response<NewsResult> response = newsAPI
-                    .getTopHeadlines(Category.technology.toString())
+                    .getTopHeadlines(category.toString(),pageSize)
                     .execute();
 
             // Si la respuesta fue exitosa
@@ -132,8 +132,22 @@ public final class NewsApiService {
          */
         @Headers({"X-Api-Key: " + API_KEY})
         @GET("top-headlines")
-        Call<NewsResult> getTopHeadlines(@Query("category") final String category);
+        Call<NewsResult> getTopHeadlines(@Query("category") final String category,
+                                         @Query("pageSize") final int pageSize);
 
+        /**
+         *Uses the Everything endpoint that let you choose the language
+         * @param category es usado para pesquisar pos palavras claves en la API (en getEverything no se usa categoria,
+         *                 pero se puede selecionar idiomas
+         * @param pageSize
+         * @param language
+         * @return
+         */
+        @Headers({"X-Api-Key: " + API_KEY})
+        @GET("everything")
+        Call<NewsResult> getEveryThing(@Query("q") final String category,
+                                       @Query("pageSize") final int pageSize,
+                                       @Query("language") final String language);
     }
 
     /**
