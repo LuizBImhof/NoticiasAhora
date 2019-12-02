@@ -16,15 +16,14 @@
 
 package cl.ucn.disc.dsm.news.newsapi;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.List;
-
 import cl.ucn.disc.dsm.news.Transformer;
 import cl.ucn.disc.dsm.news.model.Noticia;
+import java.io.IOException;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import retrofit2.Call;
+import retrofit2.HttpException;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -37,9 +36,8 @@ import retrofit2.http.Query;
  *
  * @author Diego Urrutia-Astorga.
  */
-
-
 public final class NewsApiService {
+
     /**
      * The Logger
      */
@@ -74,39 +72,71 @@ public final class NewsApiService {
     }
 
     /**
-     * @return la {@link List} de {@link Noticia}.
+     * @param theCall to use to get the Noticia.
+     * @return the {@link List} of {@link Noticia}.
      */
-    public List<Noticia> getNoticias(Category category, int pageSize) {
+    private static List<Noticia> getNoticiasFromCall(final Call<NewsResult> theCall) {
 
         try {
 
-            // Obtengo las noticias de technology por defecto
-            final Response<NewsResult> response = newsAPI
-                    .getTopHeadlines(category.toString(),pageSize)
-                    .execute();
+            // Get the News from Category
+            final Response<NewsResult> response = theCall.execute();
 
-            // Si la respuesta fue exitosa
+            // Code in the 2xx range
             if (response.isSuccessful()) {
+
+                // .. may be the data can be null?
+                if (response.body() == null) {
+                    throw new NewsAPIException("Body was null");
+                }
 
                 // Obtengo el newsResult del body
                 final NewsResult newsResult = response.body();
-                if (newsResult != null) {
-                    return TRANSFORMER.transform(newsResult.articles);
-                }
 
-                throw new NewsAPIException("NewsResult fue null");
+                // .. may the articles can be null?
+                if (newsResult.articles == null) {
+                    throw new NewsAPIException("Articles was null");
+                }
+                return TRANSFORMER.transform(newsResult.articles);
+
             }
 
-            log.error("Error: {}", response.errorBody().toString());
-            throw new NewsAPIException("TopHeadlines no exitoso, error: " + response.code());
+            final HttpException httpException = new HttpException(response);
+            log.error("Error: {}.", httpException.response().errorBody().string());
+
+            // No fue exitoso, algun error ocurrio
+            throw new NewsAPIException("Can't get the NewsResult, code: " + response.code() + ". ", httpException);
 
         } catch (final IOException ex) {
-            log.error("Error", ex);
-            throw new NewsAPIException("Erro al obtener los Articles", ex);
+            throw new NewsAPIException("Can't get the NewsResult", ex);
         }
 
     }
 
+    /**
+     * Get the List of Noticia filtered by category.
+     *
+     * @param category to filter.
+     * @param pageSize numbers of Noticia to get.
+     * @return la {@link List} de {@link Noticia}.
+     */
+    public List<Noticia> getNoticias(final Category category, final int pageSize) {
+
+        return getNoticiasFromCall(newsAPI.getTopHeadlines(category.toString(), pageSize));
+
+    }
+
+    /**
+     * Get the top everything of Noticia.
+     *
+     * @param pageSize numbers of Noticia to get.
+     * @return the {@link List} of {@link Noticia}.
+     */
+    public List<Noticia> getNoticias(final int pageSize) {
+
+        return getNoticiasFromCall(newsAPI.getEverything(pageSize));
+
+    }
 
     /**
      * Categorias del servicio.
@@ -127,27 +157,25 @@ public final class NewsApiService {
     public interface NewsAPI {
 
         /**
-         * @param category a utilizar como filtro.
-         * @return the Call of {@link NewsResult}.
+         * https://newsapi.org/docs/endpoints/top-headlines
+         *
+         * @param category to use as filter.
+         * @param pageSize the number of results to get.
+         * @return the call of {@link NewsResult}.
          */
         @Headers({"X-Api-Key: " + API_KEY})
         @GET("top-headlines")
-        Call<NewsResult> getTopHeadlines(@Query("category") final String category,
-                                         @Query("pageSize") final int pageSize);
+        Call<NewsResult> getTopHeadlines(@Query("category") final String category, @Query("pageSize") final int pageSize);
 
         /**
-         *Uses the Everything endpoint that let you choose the language
-         * @param category es usado para pesquisar pos palavras claves en la API (en getEverything no se usa categoria,
-         *                 pero se puede selecionar idiomas
-         * @param pageSize
-         * @param language
-         * @return
+         * https://newsapi.org/docs/endpoints/everything
+         *
+         * @return the call of {@link NewsResult}.
          */
         @Headers({"X-Api-Key: " + API_KEY})
-        @GET("everything")
-        Call<NewsResult> getEveryThing(@Query("q") final String category,
-                                       @Query("pageSize") final int pageSize,
-                                       @Query("language") final String language);
+        @GET("everything?q=Chile")
+        Call<NewsResult> getEverything(@Query("pageSize") final int pageSize);
+
     }
 
     /**

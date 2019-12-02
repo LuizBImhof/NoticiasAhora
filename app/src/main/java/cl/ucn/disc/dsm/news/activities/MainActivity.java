@@ -1,117 +1,131 @@
 /*
- * Copyright (c) 2019. Luiz Artur Boing Imhof
+ * Copyright (c) 2019 Diego Urrutia-Astorga.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package cl.ucn.disc.dsm.news.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.ListActivity;
-import android.os.AsyncTask;
+import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
-
+import cl.ucn.disc.dsm.news.R;
 import cl.ucn.disc.dsm.news.adapters.NoticiaAdapter;
 import cl.ucn.disc.dsm.news.model.Noticia;
 import cl.ucn.disc.dsm.news.newsapi.NewsApiService;
+import cl.ucn.disc.dsm.news.tasks.LoadNoticiasTask;
+import cl.ucn.disc.dsm.news.tasks.Resource.ResourceListener;
+import java.util.List;
 
-public class MainActivity extends ListActivity {
+/**
+ * MainActiviy using ListActivity to show the list on Noticias.
+ *
+ * @author Diego Urrutia Astorga.
+ */
+public class MainActivity extends ListActivity implements ResourceListener<List<Noticia>> {
 
     /**
-     * El Adapter de noticias
+     * The Adapter de Noticias.
      */
     private NoticiaAdapter noticiaAdapter;
 
-    private final NewsApiService newsApiService = new NewsApiService();
+    /**
+     * The progress dialog
+     */
+    private ProgressDialog progressDialog;
 
     /**
-     *
      * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // The layout
+        this.setContentView(R.layout.activitylist_noticias);
+
+        // "Loading .."
+        this.progressDialog = new ProgressDialog(this);
+        this.progressDialog.setMessage("Loading ..");
+        // this.progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        // this.progressDialog.setCancelable(false);
+
+        // Construccion del adaptador de noticias
         this.noticiaAdapter = new NoticiaAdapter(this);
 
+        // Conexion entre ListActivity y el NoticiaAdapter
         this.setListAdapter(this.noticiaAdapter);
-        GetNoticiaTask getNoticiaTask = new GetNoticiaTask();
-
-        getNoticiaTask.execute(NewsApiService.Category.general, NewsApiService.Category.sports, NewsApiService.Category.technology);
 
     }
 
-    public class GetNoticiaTask extends AsyncTask<NewsApiService.Category,Void, List<Noticia>>{
+    /**
+     * Called after {@link #onCreate} or after {@link #onRestart} when the activity had been stopped.
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-        public GetNoticiaTask() {
-        }
+        // Run in the backgrounds
 
-        /**
-         * <p>Applications should preferably override {@link #onCancelled(Object)}.
-         * This method is invoked by the default implementation of
-         * {@link #onCancelled(Object)}.
-         * The default version does nothing.</p>
-         *
-         * <p>Runs on the UI thread after {@link #cancel(boolean)} is invoked and
-         * {@link #doInBackground(Object[])} has finished.</p>
-         *
-         * @see #onCancelled(Object)
-         * @see #cancel(boolean)
-         * @see #isCancelled()
-         */
+        new LoadNoticiasTask(this).execute(
+                NewsApiService.Category.science,
+                NewsApiService.Category.business,
+                NewsApiService.Category.technology
+        );
 
 
-        /**
-         * <p>Runs on the UI thread after {@link #doInBackground}. The
-         * specified result is the value returned by {@link #doInBackground}.
-         * To better support testing frameworks, it is recommended that this be
-         * written to tolerate direct execution as part of the execute() call.
-         * The default version does nothing.</p>
-         *
-         * <p>This method won't be invoked if the task was cancelled.</p>
-         *
-         * @param noticias The result of the operation computed by {@link #doInBackground}.
-         * @see #onPreExecute
-         * @see #doInBackground
-         * @see #onCancelled()
-         */
-        @Override
-        protected void onPostExecute(List<Noticia> noticias) {
-            noticiaAdapter.setNoticias(noticias);
-        }
+        //new LoadNoticiasTask(this).execute();
 
-        /**
-         * Override this method to perform a computation on a background thread. The
-         * specified parameters are the parameters passed to {@link #execute}
-         * by the caller of this task.
-         * <p>
-         * This will normally run on a background thread. But to better
-         * support testing frameworks, it is recommended that this also tolerates
-         * direct execution on the foreground thread, as part of the {@link #execute} call.
-         * <p>
-         * This method can call {@link #publishProgress} to publish updates
-         * on the UI thread.
-         *
-         * @param categories The parameters of the task.
-         * @return A result, defined by the subclass of this task.
-         * @see #onPreExecute()
-         * @see #onPostExecute
-         * @see #publishProgress
-         */
-        @Override
-        protected List<Noticia> doInBackground(NewsApiService.Category... categories) {
-            List<Noticia> noticias = new ArrayList<>();
-
-            for (NewsApiService.Category categoria: categories) {
-                if (isCancelled()) {
-                    return null;
-                }
-                noticias.addAll(newsApiService.getNoticias(categoria,10));
-            }
-            return  noticias;
-        }
     }
+
+    /**
+     * In the beginning
+     */
+    public void onStarting() {
+        this.progressDialog.show();
+    }
+
+    /**
+     * @param message the progress.
+     */
+    public void onProgress(String message) {
+        this.progressDialog.setMessage("Loading " + message + " ..");
+    }
+
+    /**
+     * @param noticias to use as output.
+     */
+    public void onSuccess(List<Noticia> noticias) {
+
+        // Hide the dialog
+        this.progressDialog.hide();
+
+        // Set the noticias getted from internet
+        this.noticiaAdapter.setNoticias(noticias);
+    }
+
+    /**
+     * If was cancelled
+     */
+    public void onCancelled() {
+        this.progressDialog.hide();
+    }
+
+    /**
+     * @param ex error to use.
+     */
+    public void onFailure(Exception ex) {
+        this.progressDialog.hide();
+    }
+
 }
