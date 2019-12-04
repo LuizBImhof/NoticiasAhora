@@ -19,12 +19,22 @@ package cl.ucn.disc.dsm.news.activities;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import cl.ucn.disc.dsm.news.R;
 import cl.ucn.disc.dsm.news.adapters.NoticiaAdapter;
+import cl.ucn.disc.dsm.news.adapters.RecyclerNoticiaAdapter;
 import cl.ucn.disc.dsm.news.model.Noticia;
 import cl.ucn.disc.dsm.news.newsapi.NewsApiService;
 import cl.ucn.disc.dsm.news.tasks.LoadNoticiasTask;
 import cl.ucn.disc.dsm.news.tasks.Resource.ResourceListener;
+
 import java.util.List;
 
 /**
@@ -32,12 +42,16 @@ import java.util.List;
  *
  * @author Diego Urrutia Astorga.
  */
-public class MainActivity extends ListActivity implements ResourceListener<List<Noticia>> {
+public class MainActivity extends AppCompatActivity implements ResourceListener<List<Noticia>> {
 
+    /**
+     * The logger
+     */
+    Logger log = LoggerFactory.getLogger(MainActivity.class);
     /**
      * The Adapter de Noticias.
      */
-    private NoticiaAdapter noticiaAdapter;
+    private RecyclerNoticiaAdapter noticiaAdapter;
 
     /**
      * The progress dialog
@@ -60,12 +74,9 @@ public class MainActivity extends ListActivity implements ResourceListener<List<
         // this.progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         // this.progressDialog.setCancelable(false);
 
-        // Construccion del adaptador de noticias
-        this.noticiaAdapter = new NoticiaAdapter(this);
 
         // Conexion entre ListActivity y el NoticiaAdapter
-        this.setListAdapter(this.noticiaAdapter);
-
+        //this.setListAdapter(this.noticiaAdapter);
     }
 
     /**
@@ -111,7 +122,10 @@ public class MainActivity extends ListActivity implements ResourceListener<List<
         this.progressDialog.hide();
 
         // Set the noticias getted from internet
-        this.noticiaAdapter.setNoticias(noticias);
+        RecyclerView recyclerView = findViewById(R.id.recycle_view);
+        noticiaAdapter = new RecyclerNoticiaAdapter(this, noticias);
+        recyclerView.setAdapter(noticiaAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     /**
