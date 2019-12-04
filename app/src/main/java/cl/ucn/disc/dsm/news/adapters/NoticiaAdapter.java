@@ -1,15 +1,19 @@
-/*
- * Copyright (c) 2019. Luiz Artur Boing Imhof
- */
+
 
 package cl.ucn.disc.dsm.news.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import com.facebook.drawee.view.SimpleDraweeView;
+
+import org.ocpsoft.prettytime.PrettyTime;
+import org.threeten.bp.DateTimeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +23,6 @@ import cl.ucn.disc.dsm.news.model.Noticia;
 
 /**
  * Adaptador de {@link cl.ucn.disc.dsm.news.model.Noticia}
- * @author Luiz Artur Boing Imhof
  */
 public final class NoticiaAdapter extends BaseAdapter {
 
@@ -123,12 +126,33 @@ public final class NoticiaAdapter extends BaseAdapter {
         final TextView tvTitulo = rowNoticia.findViewById(R.id.rn_tv_titulo);
 
         final TextView tvFecha = rowNoticia.findViewById(R.id.rn_tv_fecha);
+        final TextView tvFuente = rowNoticia.findViewById(R.id.rn_tv_fuente);
+        //final TextView tvAutor = rowNoticia.findViewById(R.id.rn_tv_autor);
+
 
         // Set the titulo
         tvTitulo.setText(noticia.getTitulo());
+        //tvAutor.setText(noticia.getAutor());
 
+        PrettyTime prettyTime = new PrettyTime();
         // Set the Fecha
-        tvFecha.setText(noticia.getFecha().toString());
+        tvFecha.setText(prettyTime.format(DateTimeUtils.toDate(noticia.getFecha().toInstant())));
+
+        tvFuente.setText(noticia.getFuente());
+
+
+        final Uri uri;
+        final SimpleDraweeView sdvImage = rowNoticia.findViewById(R.id.rn_sdv_image);
+
+        //Para el caso de que la noticia no tenga imagen
+        if(noticia.getUrlFoto() != null){
+            uri = Uri.parse(noticia.getUrlFoto());
+        }else{
+            uri = Uri.parse("https://raw.githubusercontent.com/facebook/fresco/master/docs/static/logo.png");
+        }
+        sdvImage.setImageURI(uri);
+
+
 
         return rowNoticia;
     }

@@ -19,6 +19,8 @@ package cl.ucn.disc.dsm.news;
 import android.app.Application;
 import android.content.Context;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
+
 import org.acra.ACRA;
 import org.acra.BuildConfig;
 import org.acra.annotation.AcraCore;
@@ -36,7 +38,6 @@ import org.slf4j.LoggerFactory;
  */
 @AcraCore(buildConfigClass = BuildConfig.class)
 @AcraToast(resText = R.string.crash_toast_message)
-@AcraMailSender(mailTo = "luiz.imhof@gmail.com")
 
 public final class MainApplication extends Application {
 
@@ -44,6 +45,14 @@ public final class MainApplication extends Application {
      * The logger
      */
     private static final Logger log = LoggerFactory.getLogger(MainApplication.class);
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        log.atDebug().log("Initializing Fresco");
+        Fresco.initialize(this);
+        log.atDebug().log("... Fresco initialized");
+    }
 
     /**
      *
