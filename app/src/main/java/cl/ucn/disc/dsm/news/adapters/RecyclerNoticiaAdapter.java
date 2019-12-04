@@ -40,10 +40,16 @@ public final class RecyclerNoticiaAdapter extends RecyclerView.Adapter<RecyclerN
      *
      */
     private List<Noticia> noticias = new ArrayList<>();
-
+    /**
+     * The context
+     */
     private Context mContext;
 
-
+    /**
+     *
+     * @param context the context for the adapter
+     * @param noticias the list of noticias
+     */
     public RecyclerNoticiaAdapter(Context context, List<Noticia> noticias) {
         this.noticias = noticias;
         mContext = context;
@@ -108,7 +114,7 @@ public final class RecyclerNoticiaAdapter extends RecyclerView.Adapter<RecyclerN
         holder.tvFuente.setText(noticias.get(position).getFuente());
 
         final PrettyTime prettyTime = new PrettyTime();
-        //Set the pretty fecha
+        //Set the prettyTime fecha
         holder.tvFecha.setText(prettyTime.format(DateTimeUtils.toDate(noticias.get(position).getFecha().toInstant())));
 
         final Uri uri;
@@ -131,18 +137,6 @@ public final class RecyclerNoticiaAdapter extends RecyclerView.Adapter<RecyclerN
         return noticias.size();
     }
 
-    /**
-     * Called by RecyclerView when it starts observing this Adapter.
-     * <p>
-     * Keep in mind that same adapter may be observed by multiple RecyclerViews.
-     *
-     * @param recyclerView The RecyclerView instance which started observing this adapter.
-     * @see #onDetachedFromRecyclerView(RecyclerView)
-     */
-    @Override
-    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-    }
 
     public static class NoticiaViewHolder extends RecyclerView.ViewHolder{
 
@@ -152,6 +146,10 @@ public final class RecyclerNoticiaAdapter extends RecyclerView.Adapter<RecyclerN
         TextView tvFuente;
         LinearLayout parentLayout;
 
+        /**
+         *
+         * @param itemView the view for each item of the recycler view
+         */
         public NoticiaViewHolder(@NonNull View itemView) {
             super(itemView);
             sdvFoto = itemView.findViewById(R.id.rn_sdv_image);

@@ -71,12 +71,7 @@ public class MainActivity extends AppCompatActivity implements ResourceListener<
         // "Loading .."
         this.progressDialog = new ProgressDialog(this);
         this.progressDialog.setMessage("Loading ..");
-        // this.progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        // this.progressDialog.setCancelable(false);
 
-
-        // Conexion entre ListActivity y el NoticiaAdapter
-        //this.setListAdapter(this.noticiaAdapter);
     }
 
     /**
@@ -121,9 +116,11 @@ public class MainActivity extends AppCompatActivity implements ResourceListener<
         // Hide the dialog
         this.progressDialog.hide();
 
-        // Set the noticias getted from internet
+        // Create the recYclerView
         RecyclerView recyclerView = findViewById(R.id.recycle_view);
+        // The recyclerView Adapter
         noticiaAdapter = new RecyclerNoticiaAdapter(this, noticias);
+
         recyclerView.setAdapter(noticiaAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
