@@ -16,33 +16,25 @@
 
 package cl.ucn.disc.dsm.news.activities;
 
-import android.app.ListActivity;
-import android.app.ProgressDialog;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cl.ucn.disc.dsm.news.R;
-import cl.ucn.disc.dsm.news.adapters.NoticiaAdapter;
+import cl.ucn.disc.dsm.news.activities.model.NoticiasViewModel;
 import cl.ucn.disc.dsm.news.adapters.RecyclerNoticiaAdapter;
-import cl.ucn.disc.dsm.news.model.Noticia;
-import cl.ucn.disc.dsm.news.newsapi.NewsApiService;
-import cl.ucn.disc.dsm.news.tasks.LoadNoticiasTask;
-import cl.ucn.disc.dsm.news.tasks.Resource.ResourceListener;
-
-import java.util.List;
+import cl.ucn.disc.dsm.news.databinding.ActivitylistNoticiasBinding;
 
 /**
- * MainActiviy using ListActivity to show the list on Noticias.
+ * MainActiviy using ViewModel, recycler view and observer to show the list on Noticias.
  *
  * @author Diego Urrutia Astorga.
  */
-public class MainActivity extends AppCompatActivity implements ResourceListener<List<Noticia>> {
+public class MainActivity extends AppCompatActivity {
 
     /**
      * The logger
@@ -54,9 +46,15 @@ public class MainActivity extends AppCompatActivity implements ResourceListener<
     private RecyclerNoticiaAdapter noticiaAdapter;
 
     /**
-     * The progress dialog
+     * The ViewModel
      */
-    private ProgressDialog progressDialog;
+    private NoticiasViewModel noticiasViewModel;
+
+    /**
+     * The binding
+     */
+    private ActivitylistNoticiasBinding binding;
+
 
     /**
      * @param savedInstanceState
@@ -65,78 +63,38 @@ public class MainActivity extends AppCompatActivity implements ResourceListener<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // The layout
-        this.setContentView(R.layout.activitylist_noticias);
+        this.binding = ActivitylistNoticiasBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        // "Loading .."
-        this.progressDialog = new ProgressDialog(this);
-        this.progressDialog.setMessage("Loading ..");
+        this.noticiaAdapter = new RecyclerNoticiaAdapter();
+
+        // The list of Noticias
+        {
+            this.binding.rvNoticias.setLayoutManager(new LinearLayoutManager(this));
+            this.binding.rvNoticias.setAdapter(this.noticiaAdapter);
+        }
+        // The view-model
+        this.noticiasViewModel = new ViewModelProvider(this).get(NoticiasViewModel.class);
+
+        // The refresh
+        {
+            this.binding.swlRefresh.setOnRefreshListener(() -> {
+                this.noticiasViewModel.refresh();
+            });
+        }
+        // The observe
+        this.noticiasViewModel.getNoticias().observe(this, noticias -> {
+
+            log.debug("Noticias: {}.", noticias.size());
+
+            // Update the adapter
+            this.noticiaAdapter.setNoticias(noticias);
+            // Hide the loading
+            this.binding.swlRefresh.setRefreshing(false);
+
+        });
 
     }
 
-    /**
-     * Called after {@link #onCreate} or after {@link #onRestart} when the activity had been stopped.
-     */
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        // Run in the backgrounds
-
-        new LoadNoticiasTask(this).execute(
-                NewsApiService.Category.science,
-                NewsApiService.Category.business,
-                NewsApiService.Category.technology
-        );
-
-
-        //new LoadNoticiasTask(this).execute();
-
-    }
-
-    /**
-     * In the beginning
-     */
-    public void onStarting() {
-        this.progressDialog.show();
-    }
-
-    /**
-     * @param message the progress.
-     */
-    public void onProgress(String message) {
-        this.progressDialog.setMessage("Loading " + message + " ..");
-    }
-
-    /**
-     * @param noticias to use as output.
-     */
-    public void onSuccess(List<Noticia> noticias) {
-
-        // Hide the dialog
-        this.progressDialog.hide();
-
-        // Create the recYclerView
-        RecyclerView recyclerView = findViewById(R.id.recycle_view);
-        // The recyclerView Adapter
-        noticiaAdapter = new RecyclerNoticiaAdapter(this, noticias);
-
-        recyclerView.setAdapter(noticiaAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
-
-    /**
-     * If was cancelled
-     */
-    public void onCancelled() {
-        this.progressDialog.hide();
-    }
-
-    /**
-     * @param ex error to use.
-     */
-    public void onFailure(Exception ex) {
-        this.progressDialog.hide();
-    }
 
 }
