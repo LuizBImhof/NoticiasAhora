@@ -20,6 +20,7 @@ package cl.ucn.disc.dsm.news.model;
 import org.threeten.bp.ZonedDateTime;
 
 public class NoticiaBuilder {
+    private long id;
     private String titulo;
     private String fuente;
     private String autor;
@@ -28,6 +29,11 @@ public class NoticiaBuilder {
     private String resumen;
     private String contenido;
     private ZonedDateTime fecha;
+
+    public NoticiaBuilder setId(final Long id) {
+        this.id = id;
+        return this;
+    }
 
     public NoticiaBuilder setTitulo(final String titulo) {
         this.titulo = titulo;
@@ -70,6 +76,6 @@ public class NoticiaBuilder {
     }
 
     public Noticia createNoticia() {
-        return new Noticia(titulo, fuente, url, urlFoto, resumen, contenido, fecha, autor);
+        return new Noticia(id, titulo, fuente, url, urlFoto, resumen, contenido, fecha, autor);
     }
 }

@@ -15,6 +15,12 @@
  */
 package cl.ucn.disc.dsm.news.model;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
 
 /**
@@ -22,15 +28,30 @@ import org.threeten.bp.ZonedDateTime;
  *
  * @author Diego Urrutia-Astorga.
  */
+
+@Entity(tableName = "noticia")
 public class Noticia {
+
+    /**
+     * ZoneId
+     */
+    public static final ZoneId ZONE_ID = ZoneId.of("-3");
+
+
+    /**
+     * Id (unique)
+     */
+    @PrimaryKey(autoGenerate = false)
+    private final Long id;
 
     /**
      * Titulo
      */
+    @NonNull
     private final String titulo;
 
     /**
-     * fuente
+     * The fuente
      */
     private final String fuente;
 
@@ -42,6 +63,7 @@ public class Noticia {
     /**
      * lugar donde se encuentra la foto
      */
+    @ColumnInfo(name = "url_foto")
     private final String urlFoto;
 
     /**
@@ -57,6 +79,7 @@ public class Noticia {
     /**
      * fecha, con hora de la publicacion de la noticia
      */
+    @NonNull
     private final ZonedDateTime fecha;
 
     /**
@@ -74,16 +97,9 @@ public class Noticia {
 
     /**
      * Constructor
-     * @param titulo
-     * @param fuente
-     * @param url
-     * @param urlFoto
-     * @param resumen
-     * @param contenido
-     * @param fecha
-     * @param autor
      */
-    public Noticia(String titulo, String fuente, String url, String urlFoto, String resumen, String contenido, ZonedDateTime fecha, String autor) {
+    public Noticia(Long id, String titulo, String fuente, String url, String urlFoto, String resumen, String contenido, ZonedDateTime fecha, String autor) {
+        this.id = id;
         this.titulo = titulo;
         this.fuente = fuente;
         this.url = url;
@@ -94,6 +110,9 @@ public class Noticia {
         this.autor = autor;
     }
 
+    public Long getId() {
+        return id;
+    }
 
     public String getFuente() {
         return fuente;

@@ -16,120 +16,151 @@
 
 package cl.ucn.disc.dsm.news.activities.model;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
+import android.app.Application;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+
+import com.durrutia.android.TheExecutor;
+
+import cl.ucn.disc.dsm.news.model.ModelUtils;
+import cl.ucn.disc.dsm.news.model.Noticia;
+import cl.ucn.disc.dsm.news.newsapi.NewsApiService;
+import cl.ucn.disc.dsm.news.newsapi.NewsApiService.NewsAPIException;
 
 import java.util.List;
 
-import cl.ucn.disc.dsm.news.model.Noticia;
-import cl.ucn.disc.dsm.news.newsapi.NewsApiService;
-import cl.ucn.disc.dsm.news.tasks.LoadNoticiasTask;
-import cl.ucn.disc.dsm.news.tasks.Resource;
+import org.apache.commons.lang3.time.StopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.threeten.bp.ZonedDateTime;
+import org.threeten.bp.temporal.ChronoUnit;
 
 /**
- * The Noticias ViewModel.
+ * The ViewModel of Noticia.
  */
-public class NoticiasViewModel extends ViewModel implements Resource.ResourceListener<List<Noticia>> {
+public final class NoticiasViewModel extends AndroidViewModel {
 
     /**
-     * The Logger
+     * The Logger.
      */
     private static final Logger log = LoggerFactory.getLogger(NoticiasViewModel.class);
 
     /**
-     * The list of Noticias.
+     * Number to Noticias to get from network.
      */
-    private final MutableLiveData<List<Noticia>> theNoticias = new MutableLiveData<>();
+    private static final int PAGE_SIZE = 90;
 
     /**
-     * Asyntask to load the news
+     * Minutes between updates
      */
-    private LoadNoticiasTask loadNoticiasTask;
+    private static final int MINUTES = 15;
 
     /**
-     *
+     * The Repository (Network).
      */
-    public NoticiasViewModel() {
-        super();
+    private static final NewsApiService NEWS_API_SERVICE = new NewsApiService();
+
+    /**
+     * The Repository (Database).
+     */
+    private final NoticiasDatabaseRepository noticiasDatabaseRepository;
+
+    /**
+     * The Resource
+     */
+    private LiveData<List<Noticia>> theNoticias;
+
+    /**
+     * The Constructor
+     */
+    public NoticiasViewModel(final Application application) {
+        super(application);
+
+        // The repository of Noticia from Database.
+        this.noticiasDatabaseRepository = new NoticiasDatabaseRepository(application);
+
+        // Noticias from database.
+        this.theNoticias = this.noticiasDatabaseRepository.getNoticias();
+
     }
 
     /**
-     * @return the LiveData of Noticias.
+     * @return the List of Noticia.
      */
     public LiveData<List<Noticia>> getNoticias() {
         return this.theNoticias;
     }
 
     /**
-     * Get the latest news from NewsAPI
+     * Refresh the news from repository.
      */
-    public void loadNoticias(NewsApiService.Category... categories) {
+    public void refresh() {
 
-        if (loadNoticiasTask == null) {
-
-            log.debug("Creating new AsynTask to load Noticias ..");
-            this.loadNoticiasTask = new LoadNoticiasTask(this);
-
-            // Execute!
-            this.loadNoticiasTask.execute(categories);
-
-        } else {
-            log.debug("Already running a task, skipping.");
+        // Don't exist Noticias in the backend or is empty
+        if (this.theNoticias.getValue() == null || this.theNoticias.getValue().size() == 0) {
+            log.warn("No Noticias, fetching ..");
+            this.fetchNoticiasFromNetworkInBackground();
+            return;
         }
 
+        // No time
+        final ZonedDateTime now = ZonedDateTime.now(Noticia.ZONE_ID);
+        final ZonedDateTime last = this.theNoticias.getValue().get(0).getFecha();
+
+        log.debug("Noww: {}", now);
+        log.debug("Last: {}", last);
+
+        final long minutes = ChronoUnit.MINUTES.between(last, now);
+        log.debug("Minutes: {}", minutes);
+
+        if (minutes > MINUTES) {
+            log.debug("Refreshing ..");
+            this.fetchNoticiasFromNetworkInBackground();
+            return;
+        }
+
+        log.debug("Fetch aborted!");
+
     }
 
     /**
-     * On start!
+     * Fetch and save the noticias.
      */
-    @Override
-    public void onStarting() {
-        log.debug("Starting the task ..");
+    private void fetchNoticiasFromNetworkInBackground() {
+
+        final StopWatch stopWatch = StopWatch.createStarted();
+
+        // Exec in background
+        TheExecutor.execInNetworkIO(() -> {
+
+            // Get from the network (in background).
+            try {
+                final List<Noticia> noticias = NEWS_API_SERVICE.getNoticias(PAGE_SIZE);
+
+                // The new noticias
+                final List<Noticia> newNoticias = ModelUtils.subtraction(this.theNoticias.getValue(), noticias);
+                log.debug("New Noticias: {}", newNoticias.size());
+
+                // FIXME: Send a Result in case of nothing changed.
+                if (newNoticias.size() == 0) {
+                    newNoticias.add(noticias.get(0));
+                }
+
+                // Insert into the database.
+                this.noticiasDatabaseRepository.saveNoticias(newNoticias);
+
+                log.debug("fetchNoticiasFromNetwork Timex: {}", stopWatch);
+
+            } catch (final NewsAPIException ex) {
+                // FIXME: Send a Result in case of error.
+                log.error("Can't get the Noticias", ex);
+            }
+
+        });
+
     }
 
-    /**
-     * @param message of progress.
-     */
-    @Override
-    public void onProgress(final String message) {
-        log.debug("Trying to get Noticias of type: {} ..", message);
-    }
-
-    /**
-     * @param theResult to use as output.
-     */
-    @Override
-    public void onSuccess(final List<Noticia> theResult) {
-
-        log.debug("Success, Total of Noticias founded: {}", theResult.size());
-
-        // Need to do in the main thread.
-        theNoticias.setValue(theResult);
-        this.loadNoticiasTask = null;
-    }
-
-    /**
-     * If was cancelled
-     */
-    @Override
-    public void onCancelled() {
-
-        log.debug("Cancelled the load !");
-        this.loadNoticiasTask = null;
-    }
-
-    /**
-     * @param e error to use.
-     */
-    @Override
-    public void onFailure(final Exception e) {
-
-        log.error("onFailure!", e);
-        this.loadNoticiasTask = null;
-    }
 
 }
+

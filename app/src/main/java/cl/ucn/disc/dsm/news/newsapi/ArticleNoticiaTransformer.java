@@ -16,8 +16,11 @@
 
 package cl.ucn.disc.dsm.news.newsapi;
 
+import net.openhft.hashing.LongHashFunction;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeParseException;
 
@@ -38,6 +41,12 @@ public final class ArticleNoticiaTransformer implements Transformer.NoticiaTrans
      * The logger
      */
     public static final Logger log = LoggerFactory.getLogger(ArticleNoticiaTransformer.class);
+
+
+    /**
+     * ZoneId
+     */
+    private static final ZoneId chileZone = ZoneId.of("-3");
 
     /**
      * Convierte una fecha de {@link String} a una {@link ZonedDateTime}.
@@ -102,10 +111,15 @@ public final class ArticleNoticiaTransformer implements Transformer.NoticiaTrans
             article.author = "No Author*";
             log.warn("Article sin author: {}", Transformer.toString(article));
         }
-        final ZonedDateTime publishedAt = parse(article.publishedAt);
+        // The date
+        final ZonedDateTime publishedAt = parse(article.publishedAt).withZoneSameInstant(chileZone);
+
+        // The unique id (computed from hash)
+        final Long theId = LongHashFunction.xx().hashChars(article.title + article.source.name);
 
         //Using the builder pattern
         return new NoticiaBuilder()
+                .setId(theId)
                 .setTitulo(article.title)
                 .setFuente(article.source.name)
                 .setAutor(article.author)
