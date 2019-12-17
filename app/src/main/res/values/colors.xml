@@ -18,22 +18,22 @@
 <resources>
 
     <color name="colorAccent">#D81B60</color>
-    <color name="lineDivider">@color/g800</color>
+    <color name="lineDivider">@color/dp800</color>
 
     <!-- Text -->
-    <color name="textColorPrimary">@color/g900</color>
-    <color name="textColorSecondary">@color/g800</color>
-    <color name="textColorTertiary">@color/g700</color>
+    <color name="textColorPrimary">@color/dp900</color>
+    <color name="textColorSecondary">@color/dp800</color>
+    <color name="textColorTertiary">@color/dp700</color>
 
     <!-- Toolbar -->
-    <color name="statusBarColor">@color/g1100</color>
-    <color name="toolbarBackground">@color/g900</color>
-    <color name="windowBackground">@color/g0</color>
-    <color name="dividerColor">@color/g300</color>
-    <color name="navigationBarColor">@color/g1100</color>
-    <color name="cardViewBackground">@color/g100</color>
+    <color name="statusBarColor">@color/dp1100</color>
+    <color name="toolbarBackdpround">@color/dp900</color>
+    <color name="windowBackground">@color/dp0</color>
+    <color name="dividerColor">@color/dp300</color>
+    <color name="navigationBarColor">@color/dp1100</color>
+    <color name="cardViewBackground">@color/dp100</color>
 
-    <color name="toolbarTitleTextColor">@color/g0</color>
-    <color name="toolbarSubtitleTextColor">@color/g50</color>
+    <color name="toolbarTitleTextColor">@color/dp0</color>
+    <color name="toolbarSubtitleTextColor">@color/dp50</color>
 
 </resources>

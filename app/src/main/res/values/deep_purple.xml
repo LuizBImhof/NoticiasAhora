@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019. Luiz Artur Boing Imhof
+  -->
+
+<resources>
+    <color name="dp0">#FFFFFF</color>
+    <color name="dp50">#EDE7F6</color>
+    <color name="dp100">#D1C4E9</color>
+    <color name="dp200">#B39DDB</color>
+    <color name="dp300">#9575CD</color>
+    <color name="dp400">#7E57C2</color>
+    <color name="dp500">#673AB7</color>
+    <color name="dp600">#5E35B1</color>
+    <color name="dp700">#512DA8</color>
+    <color name="dp800">#4527A0</color>
+    <color name="dp900">#311B92</color>
+    <color name="dp1000">#22126b</color>
+    <color name="dp1100">#190d51</color>
+    <color name="dp1200">#100835</color>
+    <color name="dp1300">#090421</color>
+    <color name="dp1400">#000000</color>
+
+</resources>

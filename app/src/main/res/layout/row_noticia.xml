@@ -10,7 +10,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="4dp"
+    android:paddingStart="4dp"
     >
 
     <androidx.cardview.widget.CardView
@@ -26,9 +28,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
             android:id="@+id/relative_layout">
-
 
             <com.facebook.drawee.view.SimpleDraweeView
                 android:id="@+id/sdv_image"
@@ -37,7 +37,7 @@
                 fresco:actualImageScaleType="focusCrop"
                 fresco:layout_constraintStart_toStartOf="parent"
                 fresco:layout_constraintTop_toTopOf="parent"
-                android:layout_marginRight="8dp"
+                android:layout_margin="4dp"
 
                 />
 
