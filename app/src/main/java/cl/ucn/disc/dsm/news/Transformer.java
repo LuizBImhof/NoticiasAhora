@@ -48,6 +48,7 @@ public final class Transformer<T> {
 
     /**
      * The constructor
+     *
      * @param noticiaTransformer a usar para la conversion
      */
     public Transformer(NoticiaTransformer<T> noticiaTransformer) {
@@ -70,10 +71,11 @@ public final class Transformer<T> {
     /**
      * Transforma una {@link Collection} de T en una {@link List} de noticia
      * se usa collection pois puede ser cualquier lista
+     *
      * @param collection fuente de T
      * @return la lista de noticias
      */
-    public List<Noticia> transform (final Collection<T> collection){
+    public List<Noticia> transform(final Collection<T> collection) {
 
         //no se permite null
         Objects.requireNonNull(collection, "No se permite una collection null");
@@ -81,13 +83,13 @@ public final class Transformer<T> {
         //Micro optimizacion: se inicializa con el tamando del collection
         final List<Noticia> noticias = new ArrayList<>(collection.size());
 
-        for (final T t:collection) {
+        for (final T t : collection) {
 
             try {
 
                 // Transformo y agrego a la lista de noticias el t.
                 noticias.add(this.noticiaTransformer.transform(t));
-            } catch (NoticiaTransformerException  e) {
+            } catch (NoticiaTransformerException e) {
                 // .. si se produce una exception, despliego un warning y se omite.
                 log.warn("Article skipped: {}", e.getMessage(), e);
             }
@@ -97,13 +99,13 @@ public final class Transformer<T> {
     }
 
     /**
-     *Responsable de transformar una T en una {@link Noticia}
+     * Responsable de transformar una T en una {@link Noticia}
+     *
      * @param <T> generico a usar como base
      */
-    public interface NoticiaTransformer<T>{
+    public interface NoticiaTransformer<T> {
 
         /**
-         *
          * @param t a transformar
          * @return la noticia a partir de t
          */
@@ -115,23 +117,23 @@ public final class Transformer<T> {
     /**
      * La exception en caso de algun error en la transformacion
      */
-    public static final class NoticiaTransformerException extends RuntimeException{
+    public static final class NoticiaTransformerException extends RuntimeException {
 
         /**
-         * @see RuntimeException
          * @param message
+         * @see RuntimeException
          */
         public NoticiaTransformerException(final String message) {
             super(message);
         }
 
         /**
-         * @see RuntimeException
          * @param message
          * @param cause
+         * @see RuntimeException
          */
-        public NoticiaTransformerException(final String message, final Throwable cause){
-            super(message,cause);
+        public NoticiaTransformerException(final String message, final Throwable cause) {
+            super(message, cause);
         }
     }
 }

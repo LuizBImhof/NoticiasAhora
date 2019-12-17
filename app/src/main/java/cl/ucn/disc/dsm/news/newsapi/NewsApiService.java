@@ -18,10 +18,13 @@ package cl.ucn.disc.dsm.news.newsapi;
 
 import cl.ucn.disc.dsm.news.Transformer;
 import cl.ucn.disc.dsm.news.model.Noticia;
+
 import java.io.IOException;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import retrofit2.Call;
 import retrofit2.HttpException;
 import retrofit2.Response;

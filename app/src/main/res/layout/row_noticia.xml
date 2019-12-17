@@ -31,7 +31,7 @@
 
 
             <com.facebook.drawee.view.SimpleDraweeView
-                android:id="@+id/rn_sdv_image"
+                android:id="@+id/sdv_image"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 fresco:actualImageScaleType="focusCrop"
@@ -42,7 +42,7 @@
                 />
 
             <TextView
-                android:id="@+id/rn_tv_titulo"
+                android:id="@+id/tv_titulo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
@@ -51,30 +51,30 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:textAlignment="textStart"
-                android:layout_toEndOf="@+id/rn_sdv_image"
+                android:layout_toEndOf="@+id/sdv_image"
 
                 />
 
             <TextView
-                android:id="@+id/rn_tv_fuente"
+                android:id="@+id/tv_fuente"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextViewFuente"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:gravity="end"
-                android:layout_toEndOf="@+id/rn_sdv_image"
-                android:layout_alignBottom="@+id/rn_sdv_image"
+                android:layout_toEndOf="@+id/sdv_image"
+                android:layout_alignBottom="@+id/sdv_image"
                 />
 
             <TextView
-                android:id="@+id/rn_tv_fecha"
+                android:id="@+id/tv_fecha"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextViewFecha"
                 android:textAlignment="viewStart"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                android:layout_toEndOf="@+id/rn_sdv_image"
-                android:layout_below="@+id/rn_tv_titulo"/>
+                android:layout_toEndOf="@+id/sdv_image"
+                android:layout_below="@+id/tv_titulo"/>
 
         </RelativeLayout>
 

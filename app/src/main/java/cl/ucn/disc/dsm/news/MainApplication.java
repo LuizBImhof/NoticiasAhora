@@ -26,7 +26,6 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import org.acra.ACRA;
 import org.acra.BuildConfig;
 import org.acra.annotation.AcraCore;
-import org.acra.annotation.AcraMailSender;
 import org.acra.annotation.AcraToast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +51,8 @@ public final class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        //Set the app style to night mode when in economy mode (doesn't work with evey phone)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
 
         log.atDebug().log("Initializing Fresco");
         Fresco.initialize(this);
@@ -60,7 +60,6 @@ public final class MainApplication extends Application {
     }
 
     /**
-     *
      * @param base
      */
     @Override
